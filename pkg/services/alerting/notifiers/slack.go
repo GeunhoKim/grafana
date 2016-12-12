@@ -22,12 +22,14 @@ func NewSlackNotifier(model *m.AlertNotification) (alerting.Notifier, error) {
 		return nil, alerting.ValidationError{Reason: "Could not find url property in settings"}
 	}
 
+  proxy := model.Settings.Get("proxy").MustString()
 	recipient := model.Settings.Get("recipient").MustString()
 	mention := model.Settings.Get("mention").MustString()
 
 	return &SlackNotifier{
 		NotifierBase: NewNotifierBase(model.Id, model.IsDefault, model.Name, model.Type, model.Settings),
 		Url:          url,
+    Proxy:        proxy,
 		Recipient:    recipient,
 		Mention:      mention,
 		log:          log.New("alerting.notifier.slack"),
@@ -37,6 +39,7 @@ func NewSlackNotifier(model *m.AlertNotification) (alerting.Notifier, error) {
 type SlackNotifier struct {
 	NotifierBase
 	Url       string
+  Proxy     string
 	Recipient string
 	Mention   string
 	log       log.Logger
