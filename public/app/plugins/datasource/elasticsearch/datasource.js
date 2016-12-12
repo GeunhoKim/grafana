@@ -81,14 +81,20 @@ function (angular, _, moment, kbn, ElasticQueryBuilder, IndexPattern, ElasticRes
       range[timeField]= {
         from: options.range.from.valueOf(),
         to: options.range.to.valueOf(),
+        format: "epoch_millis",
       };
 
-      if (this.esVersion >= 2) {
-        range[timeField]["format"] = "epoch_millis";
-      }
-
       var queryInterpolated = templateSrv.replace(queryString, {}, 'lucene');
-      var query = { "bool": { "must": [{ "range": range }, { "query_string": { "query": queryInterpolated } }] }};
+      var query = {
+        "bool": {
+          "must": [
+            { "range": range },
+            { "query_string": {
+              "query": queryInterpolated }
+            }
+          ]
+        }
+      };
 
       var data = {
         "query" : query,
